@@ -1,0 +1,3 @@
+rootProject.name = 'CobaNativeBase'
+
+include ':app'
