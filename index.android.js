@@ -10,4 +10,4 @@ import {
 } from 'react-native';
 import App from './src/App'
 
-AppRegistry.registerComponent('CobaNativeBase', () => App);
+AppRegistry.registerComponent('ReactNative-Movies', () => App);
