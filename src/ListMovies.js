@@ -1,6 +1,8 @@
 'use-strict';
 
-import React, { Component } from 'react';
+import React, { 
+    Component
+ } from 'react';
 import { 
   Container, 
   Content, 
@@ -17,7 +19,8 @@ import {
   StyleSheet,
   Image,
   View,
-  FlatList
+  FlatList,
+  AsyncStorage
 } from 'react-native';
 import axios from 'axios';
 
@@ -53,6 +56,13 @@ class ListMovies extends Component {
     }
 
     componentWillMount(){
+        AsyncStorage.getItem("key_movies").then((value) => {
+            this.setState({
+                    list: JSON.parse(value),
+                    loading: false,
+                    refreshing: false
+                });
+        }).done();
         this.getPopular(this.state.page);
     }
 
@@ -68,11 +78,14 @@ class ListMovies extends Component {
         .then( response => {
             console.log(response);
             this.setState({
-             list: page === 1 ? response.data.results : [...this.state.list, ...response.data.results],
-             page: page+1,
-             loading: false,
-             refreshing: false
-            }) 
+                list: page === 1 ? response.data.results : [...this.state.list, ...response.data.results],
+                page: page+1,
+                loading: false,
+                refreshing: false
+            });
+            if (page === 1){
+                AsyncStorage.setItem('key_movies', JSON.stringify(response.data.results));
+            }
         })
         .catch( error => {
             console.log(error);
@@ -93,34 +106,6 @@ class ListMovies extends Component {
             }
         );
     }
-
-    /*renderItem(item){
-            return (<Card>
-                <CardItem>
-                    <Body>
-                        <Text>{item.title}</Text>
-                        <Text note>{item.release_date}</Text>
-                    </Body>
-                    <Badge info>
-                        <Text>{item.vote_average}</Text>
-                    </Badge>
-                </CardItem>
-                <CardItem>
-                    <Image 
-                        style={styles.poster}
-                        source={{uri: imageURL+item.poster_path}}
-                    />
-                </CardItem>
-                <CardItem>
-                    <Text>{item.vote_count} Votes</Text>
-                    <View  style={{ flex: 1 }}/>
-                    <Button info 
-                        onPress={this.onClickCard.bind(this,item)}>
-                        <Text> See Detail </Text>
-                    </Button>
-                </CardItem>
-            </Card>);
-    }*/
     
     handleRefresh = () => {
         this.setState(
